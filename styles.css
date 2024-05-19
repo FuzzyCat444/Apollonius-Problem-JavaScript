@@ -1,0 +1,85 @@
+
+.pane {
+    width: 60%;
+    min-width: 600px;
+    display: block;
+    margin: auto;
+}
+
+.canvas {
+    width: 100%;
+    aspect-ratio: 5 / 3;
+    display: block;
+    border: solid 4px;
+    box-sizing: border-box;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 1em;
+}
+
+.heading {
+    font-family: "Times New Roman", Times, serif;
+    font-size: 4em;
+    text-align: center;
+    text-decoration: underline;
+}
+
+.pg {
+    font-family: "Times New Roman", Times, serif;
+    font-size: 1.3em;
+    line-height: 1.7;
+}
+
+.image {
+    display: block;
+    margin: auto;
+    margin-top: 1em;
+    margin-bottom: 1em;
+    width: 70%;
+    border: 2px solid #000000;
+    box-sizing: border-box;
+}
+
+.collapsible {
+    width: 100%;
+    padding: 1em;
+    margin-top: 0.5em;
+    display: block;
+    background-color: #f5e7c9;
+    border: 2px solid #000000;
+    
+    cursor: pointer;
+    
+    font-family: "Times New Roman", Times, serif;
+    font-size: 1.3em;
+    text-align: left;
+}
+
+.active, .collapsible:hover {
+    background-color: #e0cfaf;
+}
+
+.collapsible-pane {
+    overflow: hidden;
+    height: 0px;
+    display: block;
+    transition: height 0.2s ease-out;
+    background-color: #f5e7c9;
+    border: 1px solid #000000;
+    border-top: none;
+    margin-bottom: 0.5em;
+}
+
+.collapsible-text {
+    padding: 1em;
+}
+
+.hr2 {
+    width: 70%;
+    height: 2px;
+}
+
+hr, .hr2 {
+    border-top: 1px solid #786c57;
+    border-bottom: 1px solid #000000;
+}
