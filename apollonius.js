@@ -6,8 +6,8 @@ import Camera from "./camera.js";
 let canvas = document.getElementById("thecanvas");
 let ctx = canvas.getContext("2d");
 let camera = new Camera(canvas);
-let rc = new Decimal("0.2");
-let circlePoints = [new Vector(half.neg(), half), new Vector(rc, rc), new Vector(zero, half.neg()), new Vector(rc, rc), new Vector(half, half), new Vector(rc, rc)];
+let initialRadius = new Decimal("0.3");
+let circlePoints = [new Vector(half.neg(), half), new Vector(initialRadius, zero), new Vector(zero, half.neg()), new Vector(initialRadius, zero), new Vector(half, half), new Vector(initialRadius, zero)];
 let circleColors = ["#ff0000", "#ff0000", "#002ff6", "#002ff6", "#0f9800", "#0f9800", "#ce00ff", "#ce00ff"];
 let solutionToggles = [];
 for (let i = 0; i < 8; i++) solutionToggles.push(true);
@@ -20,13 +20,13 @@ let worldDragPoint = null;
 // Returns the index of the draggable point closest to the given point in world coordinates
 function pointNearCirclePoints(p, circlePoints) {
     let ps = camera.screenToWorldScale(pointClickSize);
-    let ps2 = ps * ps;
+    let ps2 = ps.pow(two);
     for (let j = 0; j < circlePoints.length; j++) {
         let i = 0;
         if (j < circlePoints.length / 2) {
             i = j * 2 + 1;
         } else {
-            i = 2 * (j - circlePoints.length / 2);
+            i = j * 2 - circlePoints.length;
         }
         let p1 = circlePoints[i];
         let p1_ = new Vector(p1);
@@ -35,7 +35,7 @@ function pointNearCirclePoints(p, circlePoints) {
             p1_.add(p2);
         }
         p1_.sub(p);
-        if (p1_.lenSq < ps2) {
+        if (p1_.lenSq.lt(ps2)) {
             return i;
         }
     }
@@ -52,8 +52,9 @@ function updateMouse(event) {
         } else {
             p.set(m);
         }
-    } else if (worldDragPoint !== null) {
+    } else if (worldDragPoint != null) {
         let mw = camera.mouseCoordsWorld(event);
+        // the difference between the mouse coordinates in the world and the point being dragged in the world is how far the camera neeeds to move
         camera.pos.add(worldDragPoint.minus(mw));
     } else {
         if (pointNearCirclePoints(m, circlePoints) !== -1) {
@@ -67,7 +68,7 @@ function updateMouse(event) {
 canvas.addEventListener("wheel", event => {
     if (document.activeElement === canvas) {
         event.preventDefault();
-        camera.zoom = camera.zoom.sub(0.001 * event.deltaY);
+        camera.zoom = camera.zoom.sub(new Decimal(0.001 * event.deltaY));
         updateMouse(event);
     }
 });
@@ -117,6 +118,7 @@ canvas.setAttribute("tabindex", 0);
 // (sign1, sign2) can be (1,1), (1,-1), (-1,1), or (-1,-1)
 // 4 sign combinations * 2 solutions per quadratic = all 8 possible solutions
 // It is not necessary to generate all 8 sign combinations as solutions come in pairs
+// null is returned if there is no valid solution radius
 function getSolutionPair(circlePoints, sign1, sign2) {
     let circles = [];
     // If circles are described by two points, convert them to one point and a radius
@@ -174,6 +176,7 @@ function getSolutionPair(circlePoints, sign1, sign2) {
 // Locates point based on distances to three other points using circle-circle intersection
 // Formula for circle-circle intersection: https://mathworld.wolfram.com/Circle-CircleIntersection.html
 // There appears to be a typo in the square root when solving for "a" on the website, I worked through the algebra and fixed it here
+// null is returned if a valid intersection point cannot be found
 const circleEpsilon = new Decimal("0.000000000001");
 function triangulatePosition(p1, p2, p3, d1, d2, d3) {
     let d = p1.minus(p2).len;
@@ -186,17 +189,21 @@ function triangulatePosition(p1, p2, p3, d1, d2, d3) {
     let x = halfDivD.mul(d.pow(two).add(d1.pow(two)).sub(d2.pow(two)));
     let y = halfDivD.mul(discriminant.sqrt());
     
+    // Create coordinates of intersection points using orthogonal axes
     let axis1 = p2.minus(p1);
     axis1.len = x;
     let axis2 = new Vector(axis1.y.neg(), axis1.x);
     axis2.len = y;
     
+    // Get intersection points of first two circles
     let int1 = p1.plus(axis1.plus(axis2));
     let int2 = p1.plus(axis1.minus(axis2));
     
+    // Measure the distance of each point from the circumference of the third point
     let onCircle3_1 = int1.minus(p3).len.sub(d3).abs();
     let onCircle3_2 = int2.minus(p3).len.sub(d3).abs();
     
+    // If distance is less than epsilon, point is on third circle and therefore on all three circles
     if (onCircle3_1.lt(circleEpsilon)) {
         return int1;
     } else if (onCircle3_2.lt(circleEpsilon)) {
@@ -281,21 +288,25 @@ requestAnimationFrame(function animate(timeStamp) {
             
             let solution = getSolutionPair(circlePoints, sign1, sign2);
             if (solution != null) {
+                // Get the given circle centers and radii
                 let p_a = solution[1][0];
                 let p_b = solution[1][2];
                 let p_c = solution[1][4];
                 let r_a = solution[1][1];
                 let r_b = solution[1][3];
                 let r_c = solution[1][5];
-                
+
+                // Get radii of solution circle pair
                 let r1 = solution[0][0];
                 let r2 = solution[0][1];
+                // Find location of solution circles by computing the distances between their centers and the given circle centers
                 let p1 = triangulatePosition(p_a, p_b, p_c, r_a.add(sign1.mul(r1)).abs(), r_b.add(sign2.mul(r1)).abs(), r_c.add(r1).abs());
                 let p2 = triangulatePosition(p_a, p_b, p_c, r_a.add(sign1.mul(r2)).abs(), r_b.add(sign2.mul(r2)).abs(), r_c.add(r2).abs());
                 
                 let si1 = 2 * i;
                 let si2 = si1 + 1;
                 ctx.lineWidth = 2;
+                // If the solution circle is disabled using the keyboard, or if the solution circle position is invalid, don't draw
                 if (solutionToggles[si1] && p1 != null) {
                     ctx.strokeStyle = circleColors[si1];
                     drawCircle(ctx, camera, p1, r1.abs(), false);

@@ -28,11 +28,11 @@
 
 <p class="pg">The problem of Apollonius is a relatively challenging geometry problem where, given three circles, the goal is to find a circle tangent to all three. There may exist as many as eight or as few as zero solutions, though solutions tend to come in pairs. Occasionally, a solution circle may have an "infinite radius" meaning that it is identical to a straight line which is tangent to the three circles. Solving the problem of Apollonius for the unknown radius is as simple as finding the roots of a quadratic. However, some of the approaches I attempted were naive because they introduced radicals that, when squared out, produced 4th degree or 8th degree polynomials. One could find two such higher degree polynomials and compute the GCD of the two polynomials to get the solution quadratic (which I have done successfully), but this is not a very elegant approach. Factoring is also an option, but not a very efficient one. Luckily I found an interesting paper called "<a href="https://forumgeom.fau.edu/FG2017volume17/FG201735.pdf" target="_blank" rel="noopener noreferrer">Radii of Circles in Apollonius' Problem</a>" by Milorad R. Stevanovic, Predrag B. Petrovic, and Marina M. Stevanovic which details a nice trigonometric solution that results in a quadratic polynomial. I liked it so much that I wanted to write about their approach and create an interactive JavaScript implementation of the solutions as seen above. Their solution was trigonometric in nature, but I think vector algebra is an interesting lens through which to view this problem. The solution outlined by Stevanovic et al. can be restated in the style of vector algebra without much difficulty; that is what I do on this page.</p>
 
-<p class="pg"> Take the moment to observe the following diagram: </p>
+<p class="pg"> Take a moment to observe the following diagram: </p>
 
 <img src="apollonius.png" class="image"/>
 
-<p class="pg"> We wish to find the radius of the inner circle \(r\) given the known values \(r_a\), \(r_b\), and \(r_c\). The vectors \(\vec{a}\), \(\vec{b}\), and \(\vec{c}\) point from the center of the solution circle to the centers of the given circles. Then the vector magnitudes \(\lvert\vec{a}\rvert\), \(\lvert\vec{b}\rvert\), and \(\lvert\vec{c}\rvert\), are equal to \(r+r_a\), \(r+r_b\), and \(r+r_c\), respectively.</p>
+<p class="pg"> We wish to find the radius of the inner circle \(r\) given the known radii \(r_a\), \(r_b\), and \(r_c\). The vectors \(\vec{a}\), \(\vec{b}\), and \(\vec{c}\) point from the center of the solution circle to the centers of the given circles. Then the vector magnitudes \(\lvert\vec{a}\rvert\), \(\lvert\vec{b}\rvert\), and \(\lvert\vec{c}\rvert\), are equal to \(\left(r+r_a\right)\), \(\left(r+r_b\right)\), and \(\left(r+r_c\right)\), respectively. The side lengths of the largest triangle are equal the magnitudes of the differences of each vector: \(\lvert\vec{a}-\vec{b}\rvert\), \(\lvert\vec{b}-\vec{c}\rvert\), and \(\lvert\vec{a}-\vec{c}\rvert\).</p>
 
 <p class="pg"> Since we are working inside of a 2D plane, it is important to note that any vector is a linear combination of any other two vectors (provided they are not parallel). This means, for example, that we could express \(\vec{c}\) as a linear combination of \(\vec{a}\) and \(\vec{b}\): </p>
 
@@ -75,6 +75,11 @@ $$\large m=\frac{\left(\vec{a}\cdot\vec{c}\right)\lvert\vec{b}\rvert^2-\left(\ve
 <p class="pg">We may do the same for \(n\):</p>
 
 $$\large n=\frac{\left(\vec{b}\cdot\vec{c}\right)\lvert\vec{a}\rvert^2-\left(\vec{a}\cdot\vec{b}\right)\left(\vec{a}\cdot\vec{c}\right)}{\lvert\vec{a}\rvert^2\lvert\vec{b}\rvert^2 - \left(\vec{a}\cdot\vec{b}\right)^2}$$
+
+<button class="collapsible">The denominators of \(m\) and \(n\)...</button>
+<div class="collapsible-pane"><div class="collapsible-text">
+<p class="pg">The denominators of \(m\) and \(n\) are \(\lvert\vec{a}\rvert^2\lvert\vec{b}\rvert^2 - \left(\vec{a}\cdot\vec{b}\right)^2\). If you factor out \(\lvert\vec{a}\rvert^2\lvert\vec{b}\rvert^2\), the remaining quantity is \(\sin^2{\varphi_1}\), where \(\varphi_1\) is the angle between the two vectors.</pg>
+</div></div>
 
 <p class="pg"> Once again, we can express \(\vec{c}\) as a linear combination of \(\vec{a}\) and \(\vec{b}\), substituting the values for \(m\) and \(n\): </p>
 
@@ -146,19 +151,13 @@ $$\lvert\vec{a}-\vec{b}\rvert^2=\left(\lvert\vec{a}\rvert-\lvert\vec{b}\rvert\ri
 $$2\left(\vec{a}\cdot\vec{b}\right)=2\lvert\vec{a}\rvert\lvert\vec{b}\rvert+\left(\lvert\vec{a}\rvert-\lvert\vec{b}\rvert\right)^2-\lvert\vec{a}-\vec{b}\rvert^2$$
 $$\frac{\vec{a}\cdot\vec{b}}{\lvert\vec{a}\rvert\lvert\vec{b}\rvert}=1+\frac{\left(\lvert\vec{a}\rvert-\lvert\vec{b}\rvert\right)^2-\lvert\vec{a}-\vec{b}\rvert^2}{2\lvert\vec{a}\rvert\lvert\vec{b}\rvert}$$
 
-<p class="pg"> Since \(\frac{\vec{a}\cdot\vec{b}}{\lvert\vec{a}\rvert\lvert\vec{b}\rvert}=\cos{\varphi_1}\): </pg>
-
-$$\frac{\left(\lvert\vec{a}\rvert-\lvert\vec{b}\rvert\right)^2-\lvert\vec{a}-\vec{b}\rvert^2}{2\lvert\vec{a}\rvert\lvert\vec{b}\rvert}=\cos{\varphi_1}-1=-\text{versin}\,\varphi_1$$
-
-<p class="pg"><a href="https://en.wikipedia.org/wiki/Versine" target="_blank" rel="noopener noreferrer">Wikipedia page on versine</a>.</p>
-
 </div></div>
 
 <p class="pg"> We have an expression for \(\frac{\vec{a}\cdot\vec{b}}{\lvert\vec{a}\rvert\lvert\vec{b}\rvert}\); let's now substitute \(r+r_a\) and \(r+r_b\):</p>
 
 $$\large \frac{\vec{a}\cdot\vec{b}}{\lvert\vec{a}\rvert\lvert\vec{b}\rvert}=1+\frac{\left(r+r_a-\left(r+r_b\right)\right)^2-|\vec{a}-\vec{b}|^2}{2(r+r_a)(r+r_b)}$$
 
-$$\large =1+\frac{\left(r_a-r_b\right)^2-|\vec{a}-\vec{b}|^2}{2(r+r_a)(r+r_b)}$$
+$$\large \frac{\vec{a}\cdot\vec{b}}{\lvert\vec{a}\rvert\lvert\vec{b}\rvert}=1+\frac{\left(r_a-r_b\right)^2-|\vec{a}-\vec{b}|^2}{2(r+r_a)(r+r_b)}$$
 
 <p class="pg"> As you can see, the \(r\) in the numerator vanishes. For simplicity, let:</p>
 
@@ -198,7 +197,7 @@ $$\large \frac{K_a^2}{4\lvert\vec{b}\rvert^2\lvert\vec{c}\rvert^2} + \frac{K_b^2
 
 $$\large K_a^2 \lvert\vec{a}\rvert^2+K_b^2 \lvert\vec{b}\rvert^2+K_c^2 \lvert\vec{c}\rvert^2 - 2 K_a K_b \lvert\vec{a}\rvert \lvert\vec{b}\rvert- 2 K_b K_c \lvert\vec{b}\rvert \lvert\vec{c}\rvert - 2 K_a K_c \lvert\vec{a}\rvert \lvert\vec{c}\rvert - K_a K_b K_c=0$$
 
-<p class="pg"> Hopefully it's clear that this is a quadratic equation of \(r\) which can be solved with the quadratic formula after substituting \(r+r_a\), \(r+r_b\), and \(r+r_c\) for \(\lvert\vec{a}\rvert\), \(\lvert\vec{b}\rvert\), and \(\lvert\vec{c}\rvert\). In other words, the equation takes the form:</p>
+<p class="pg"> Hopefully it's clear that this is a quadratic equation of \(r\) which can be solved with the quadratic formula after substituting \(\left(r+r_a\right)\), \(\left(r+r_b\right)\), and \(\left(r+r_c\right)\) for \(\lvert\vec{a}\rvert\), \(\lvert\vec{b}\rvert\), and \(\lvert\vec{c}\rvert\). In other words, the equation takes the form:</p>
 
 $$\large A r^2 + B r + C = 0$$
 
@@ -218,9 +217,20 @@ $$\large r=\frac{-B\pm\sqrt{B^2-4AC}}{2A}$$
 
 <p class="pg">We know at least one of those solutions should be the radius of the inner circle in the original diagram.</p>
 
-<p class="pg">What if we want to find the other seven solutions? Not every solution circle is externally tangent to the three given circles; some are internally tangent. One could imagine substituting \(r-r_a\), \(r-r_b\), and \(r-r_c\) for \(\lvert\vec{a}\rvert\), \(\lvert\vec{b}\rvert\) and \(\lvert\vec{c}\rvert\) or any combination of \(\left(+\right)\)'s and \(\left(-\right)\)'s for a total of eight combinations. To see why there are up to eight solutions, count in binary with three bits, where a 0 represents a \(\left(+\right)\) and a 1 represents a \(\left(-\right)\) to enumerate all possible solutions. Making all those substitutions would yield seven additional quadratic polynomials with the desired solutions, but this is redundant. Observe the coefficients of the solution quadratic. Notice how when substituting \(-r_a\), \(-r_b\), and \(-r_c\) for \(r_a\), \(r_b\), and \(r_c\), the only thing that changes is the sign of \(B\). Now notice how substituting \(-r\) for \(r\) has the exact same effect, which is to negate \(B\). And, substituting \(-r\) for \(r\) is the same as reflecting the solution parabola about the vertical axis (the roots simply change sign). This means that the quadratic containing the solution for \(r+r_a\), \(r+r_b\), and \(r+r_c\) also contains the solution for \(r-r_a\), \(r-r_b\), and \(r-r_c\). It also means that we only have to find the roots of four different quadratic polynomials instead of eight. This is what is meant by "solutions come in pairs".</pg>
+<p class="pg">What if we want to find the other seven solutions? Not every solution circle is externally tangent to all of the three given circles; some have internal tangencies. One could imagine substituting \(\left(r-r_a\right)\), \(\left(r-r_b\right)\), and \(\left(r-r_c\right)\) for \(\lvert\vec{a}\rvert\), \(\lvert\vec{b}\rvert\) and \(\lvert\vec{c}\rvert\) to get the solution circle that is internally tangent to all of the given circles. In general, any combination of \(\left(r\pm r_a\right)\), \(\left(r\pm r_b\right)\), and \(\left(r\pm r_c\right)\) could be substituted, for a total of eight combinations. To see why there are up to eight possible combinations, count in binary with three bits, where a 0 represents a \(\left(+\right)\) and a 1 represents a \(\left(-\right)\) to enumerate all possible solutions. Making all those substitutions would yield eight quadratic polynomials with the desired solutions, but this is redundant. Observe the coefficients of the solution quadratic. Notice how when substituting \(-r_a\), \(-r_b\), and \(-r_c\) for \(r_a\), \(r_b\), and \(r_c\), the only thing that changes is the sign of \(B\). Now notice how substituting \(-r\) for \(r\) has the exact same effect, which is to negate \(B\). And, substituting \(-r\) for \(r\) is the same as reflecting the solution parabola about the vertical axis (the roots simply change sign). This means that the quadratic containing the solution for \(\left(r+r_a\right)\), \(\left(r+r_b\right)\), and \(\left(r+r_c\right)\) also contains the solution for \(\left(r-r_a\right)\), \(\left(r-r_b\right)\), and \(\left(r-r_c\right)\). It also means that it's only necessary to generate a total of four combinations for \(\left(r\pm r_a\right)\) and \(\left(r\pm r_b\right)\) and leave the sign in \(\left(r+r_c\right)\) untouched, since those four quadratic polynomials will contain the specified solution radius as well as its "dual" solution radius for a total of eight solutions. Let's go back to the specific case of the quadratic polynomial generated by \(\left(r+r_a\right)\), \(\left(r+r_b\right)\), and \(\left(r+r_c\right)\). The above logic implies: </pg>
 
-<p class="pg">There is more than one way to find the position of the solution circle once the value of \(r\) is known. The method I used involves finding the point that has distances \(\lvert\vec{a}\rvert\), \(\lvert\vec{b}\rvert\), and \(\lvert\vec{c}\rvert\) from the given circle centers. First, take the circle at \(\vec{a}\) and set its radius to \(\lvert\vec{a}\rvert\) instead of \(r_a\) and do the same for the circles at \(\vec{b}\) and \(\vec{c}\). Next, find the two intersection points of the circles at \(\vec{a}\) and \(\vec{b}\). Finally, figure out which of those two points is also on the circle at \(\vec{c}\).</p>
+<p class="pg">If both \(r\)'s are positive, then both circles are externally tangent:</p>
+<img src="externallytangent.png" class="image-small"/>
+
+<p class="pg">If both \(r\)'s are negative, then both circles are internally tangent:</p>
+<img src="internallytangent.png" class="image-small"/>
+
+<p class="pg">If one \(r\) is positive and the other is negative, then one circle is externally tangent and the other is internally tangent:</p>
+<img src="externallyinternallytangent.png" class="image-small"/>
+
+<p class="pg">There is more than one way to find the position of the solution circle once the value of \(r\) is known. The method I used involves finding the point that has distances \(\lvert\vec{a}\rvert\), \(\lvert\vec{b}\rvert\), and \(\lvert\vec{c}\rvert\) from the given circle centers. Set the radius of the circles with centers \(\vec{a}\), \(\vec{b}\), and \(\vec{c}\) to \(\lvert\vec{a}\rvert\), \(\lvert\vec{b}\rvert\), and \(\lvert\vec{c}\rvert\) (instead of \(r_a\), \(r_b\), and \(r_c\)). Next, find the two intersection points of the circles with centers \(\vec{a}\) and \(\vec{b}\). Finally, figure out which of those two points is also on the circle with center \(\vec{c}\) by comparing their distance to the circle center \(\vec{c}\) with the radius \(\lvert\vec{c}\rvert\):</p>
+
+<img src="circleposition.png" class="image"/>
 
 <p class="pg">The paper by Stevanovic et al. also solves this problem for the case of a sphere tangent to four given spheres, though with a seemingly different approach. However, I'm curious if the vector algebra approach I described on this page can be generalized to higher dimensions; I have not yet made an attempt. The idea would be to do the same thing but with four vectors:</p>
 

@@ -30,7 +30,7 @@
     line-height: 1.7;
 }
 
-.image {
+.image, .image-small {
     display: block;
     margin: auto;
     margin-top: 1em;
@@ -38,6 +38,10 @@
     width: 70%;
     border: 2px solid #000000;
     box-sizing: border-box;
+}
+
+.image-small {
+    width: 40%;
 }
 
 .collapsible {
@@ -60,7 +64,8 @@
 }
 
 .collapsible-pane {
-    overflow: hidden;
+    overflow-x: auto;
+    overflow-y: hidden;
     height: 0px;
     display: block;
     transition: height 0.2s ease-out;
