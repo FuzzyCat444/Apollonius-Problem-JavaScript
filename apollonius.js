@@ -213,7 +213,7 @@ function triangulatePosition(p1, p2, p3, d1, d2, d3) {
     };
 }
 
-function drawCircle(ctx, camera, p1, p2, drawPoints) {
+function drawCircle(ctx, camera, p1, p2, pointsDrawn) {
     let center = camera.worldToScreen(p1);
     let radius = p2;
     let hasP2 = p2.constructor === Vector;
@@ -231,22 +231,30 @@ function drawCircle(ctx, camera, p1, p2, drawPoints) {
     ctx.arc(cx, cy, radius.toNumber(), 0, 2 * Math.PI, false);
     ctx.stroke();
 
-    if (drawPoints) {
-        ctx.lineWidth = 1.5;
-        // Center point
-        ctx.beginPath();
-        ctx.arc(cx, cy, ps, 0, 2 * Math.PI, false);
-        ctx.fill();
-        ctx.stroke();
-
-        if (hasP2) {
-            // Point on circumference
-            let radiusPoint = camera.worldToScreen(p1.plus(p2));
+    if (pointsDrawn != null) {
+        let fillStyle = ctx.fillStyle;
+        let strokeStyle = "black";
+        let lineWidth = ctx.lineWidth / 2;
+        pointsDrawn.push(function() {
+            ctx.fillStyle = fillStyle;
+            ctx.strokeStyle = strokeStyle;
+            ctx.lineWidth = lineWidth;
+            
+            // Center point
             ctx.beginPath();
-            ctx.arc(radiusPoint.x.toNumber(), radiusPoint.y.toNumber(), ps, 0, 2 * Math.PI, false);
+            ctx.arc(cx, cy, ps, 0, 2 * Math.PI, false);
             ctx.fill();
             ctx.stroke();
-        }
+
+            if (hasP2) {
+                // Point on circumference
+                let radiusPoint = camera.worldToScreen(p1.plus(p2));
+                ctx.beginPath();
+                ctx.arc(radiusPoint.x.toNumber(), radiusPoint.y.toNumber(), ps, 0, 2 * Math.PI, false);
+                ctx.fill();
+                ctx.stroke();
+            }
+        });
     }
 }
 
@@ -269,6 +277,7 @@ requestAnimationFrame(function animate(timeStamp) {
         ctx.fillStyle = "white";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         
+        let pointsDrawn = [];
         for (let i = 0; i <= circlePoints.length - 2; i += 2) {
             let p1 = circlePoints[i];
             let p2 = circlePoints[i + 1];
@@ -277,7 +286,7 @@ requestAnimationFrame(function animate(timeStamp) {
             ctx.strokeStyle = "black";
             ctx.fillStyle = "blue";
 
-            drawCircle(ctx, camera, p1, p2, showPoints);
+            drawCircle(ctx, camera, p1, p2, pointsDrawn);
         }
         
         for (let i = 0; i < 4; i++) {
@@ -309,13 +318,17 @@ requestAnimationFrame(function animate(timeStamp) {
                 // If the solution circle is disabled using the keyboard, or if the solution circle position is invalid, don't draw
                 if (solutionToggles[si1] && p1 != null) {
                     ctx.strokeStyle = circleColors[si1];
-                    drawCircle(ctx, camera, p1, r1.abs(), false);
+                    drawCircle(ctx, camera, p1, r1.abs());
                 }
                 if (solutionToggles[si2] && p2 != null) {
                     ctx.strokeStyle = circleColors[si2];
-                    drawCircle(ctx, camera, p2, r2.abs(), false);
+                    drawCircle(ctx, camera, p2, r2.abs());
                 }
             }
+        }
+        
+        for (let i = 0; i < pointsDrawn.length; i++) {
+            pointsDrawn[i]();
         }
         
         previousTimeStamp = timeStamp;
