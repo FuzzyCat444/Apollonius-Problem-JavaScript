@@ -210,7 +210,7 @@ function triangulatePosition(p1, p2, p3, d1, d2, d3) {
         return int2;
     } else {
         return null;
-    };
+    }
 }
 
 function drawCircle(ctx, camera, p1, p2, pointsDrawn) {
