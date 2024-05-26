@@ -210,7 +210,7 @@ function triangulatePosition(p1, p2, p3, d1, d2, d3) {
         return int2;
     } else {
         return null;
-    }
+    };
 }
 
 function drawCircle(ctx, camera, p1, p2, pointsDrawn) {
@@ -327,8 +327,10 @@ requestAnimationFrame(function animate(timeStamp) {
             }
         }
         
-        for (let i = 0; i < pointsDrawn.length; i++) {
-            pointsDrawn[i]();
+        if (showPoints) {
+            for (let i = 0; i < pointsDrawn.length; i++) {
+                pointsDrawn[i]();
+            }
         }
         
         previousTimeStamp = timeStamp;
