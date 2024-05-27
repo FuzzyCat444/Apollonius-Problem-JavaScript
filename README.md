@@ -1,5 +1,7 @@
 # The Problem of Apollonius - JavaScript demo
 
+![animation](https://raw.githubusercontent.com/FuzzyCat444/Apollonius-Problem-JavaScript/main/images/animation.gif)
+
 [My YouTube video](https://www.youtube.com/watch?v=_KbA55qvSqE)
 
 [GitHub page link](https://fuzzycat444.github.io/Apollonius-Problem-JavaScript/)
